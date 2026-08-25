@@ -2,7 +2,7 @@
 
 ## 🔗 Live Demo
 
-👉 (https://yourusername.github.io/Digital-Bank/)
+👉 (https://pritam-42.github.io/Digital-Bank/)
 
 ---
 

@@ -1,6 +1,6 @@
 # 🏦 Digital Banking System
 
-🌐 **Live Website:** https://pritam-42.github.io/Digital-Bank/
+🌐 **Live Website:** [https://pritam-42.github.io/Digital-Bank/](https://digital-banking-system-dd918.web.app)
 
 ## 📌 About the Project
 

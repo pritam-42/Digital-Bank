@@ -2,7 +2,7 @@
 
 ## 🔗 Live Demo
 
-👉 [Visit NovaBank](https://yourusername.github.io/Digital-Bank/)
+👉 (https://yourusername.github.io/Digital-Bank/)
 
 ---
 

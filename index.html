@@ -1,0 +1,5557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NovaBank — Digital Banking System</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        :root {
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --surface-2: #f8fafc;
+
+            --text: #0f172a;
+            --muted: #64748b;
+
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #eef2ff;
+
+            --success: #16a34a;
+            --success-bg: #ecfdf3;
+
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+
+            --warning: #d97706;
+            --warning-bg: #fff7ed;
+
+            --border: #e2e8f0;
+
+            --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.05);
+            --shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 24px 70px rgba(15, 23, 42, 0.14);
+
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.08), transparent 30%),
+                var(--bg);
+
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================================================
+           LANDING PAGE
+        ========================================================= */
+
+        #landingPage {
+            min-height: 100vh;
+        }
+
+        .landing-nav {
+            width: min(1200px, 92%);
+            margin: 0 auto;
+            padding: 24px 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+
+            display: grid;
+            place-items: center;
+
+            background:
+                linear-gradient(135deg, #4f46e5, #7c3aed);
+
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+
+            box-shadow:
+                0 10px 25px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-text {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text span {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+
+            padding: 12px 18px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: 0.25s ease;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            color: white;
+
+            background:
+                linear-gradient(135deg, var(--primary), #7c3aed);
+
+            box-shadow:
+                0 10px 22px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            box-shadow:
+                0 14px 30px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-dark {
+            background: #0f172a;
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .hero {
+            width: min(1200px, 92%);
+            margin: 60px auto 80px;
+
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+
+            gap: 70px;
+
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 12px;
+
+            border-radius: 100px;
+
+            background: rgba(79, 70, 229, 0.09);
+            color: var(--primary);
+
+            font-size: 13px;
+            font-weight: 700;
+
+            margin-bottom: 22px;
+        }
+
+        .hero-title {
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            font-size: clamp(44px, 6vw, 72px);
+            line-height: 1.03;
+
+            letter-spacing: -3px;
+
+            margin-bottom: 25px;
+        }
+
+        .hero-title span {
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed,
+                    #0ea5e9
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--muted);
+
+            max-width: 650px;
+
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================================================
+           HERO VISUAL
+        ========================================================= */
+
+        .hero-visual {
+            position: relative;
+            min-height: 460px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-card {
+            width: 300px;
+            min-height: 510px;
+
+            border-radius: 38px;
+
+            background:
+                linear-gradient(
+                    160deg,
+                    #16164a,
+                    #302b82,
+                    #4f46e5
+                );
+
+            padding: 20px;
+
+            color: white;
+
+            box-shadow:
+                0 35px 80px rgba(49, 46, 129, 0.3);
+
+            transform: rotate(-4deg);
+        }
+
+        .phone-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 50px;
+
+            font-size: 13px;
+        }
+
+        .phone-balance-label {
+            font-size: 12px;
+            opacity: 0.65;
+
+            margin-bottom: 8px;
+        }
+
+        .phone-balance {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+
+            letter-spacing: -1px;
+        }
+
+        .mini-card {
+            padding: 16px;
+
+            margin-top: 26px;
+
+            border-radius: 18px;
+
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255,255,255,0.16);
+        }
+
+        .mini-row {
+            display: flex;
+            justify-content: space-between;
+
+            padding: 11px 0;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+        .mini-row:last-child {
+            border-bottom: none;
+        }
+
+        .floating-card {
+            position: absolute;
+
+            padding: 17px 20px;
+
+            background: rgba(255,255,255,0.85);
+
+            backdrop-filter: blur(20px);
+
+            border: 1px solid rgba(255,255,255,0.7);
+
+            border-radius: 18px;
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(2) {
+            right: -15px;
+            top: 40px;
+        }
+
+        .floating-card:nth-child(3) {
+            left: -30px;
+            bottom: 60px;
+            animation-delay: 1s;
+        }
+
+        .float-icon {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 12px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-weight: 800;
+        }
+
+        @keyframes float {
+            0%,100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* =========================================================
+           FEATURES
+        ========================================================= */
+
+        .features {
+            width: min(1200px, 92%);
+            margin: 0 auto 100px;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-heading h2 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 38px;
+
+            margin-bottom: 12px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.75);
+            border: 1px solid rgba(226,232,240,0.8);
+
+            backdrop-filter: blur(14px);
+
+            padding: 25px;
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow-sm);
+
+            transition: 0.25s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-7px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+
+            border-radius: 14px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-size: 21px;
+
+            margin-bottom: 18px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* =========================================================
+           MODALS
+        ========================================================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+
+            background:
+                rgba(15, 23, 42, 0.55);
+
+            backdrop-filter: blur(8px);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 9999;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: min(460px, 100%);
+
+            background: white;
+
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow: var(--shadow-lg);
+
+            animation: modalIn 0.25s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+
+        .close-btn {
+            border: none;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 12px;
+
+            background: var(--surface-2);
+
+            font-size: 18px;
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================= */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .input {
+            width: 100%;
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 13px 14px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.2s ease;
+        }
+
+        .input:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 4px rgba(79,70,229,0.1);
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 5px;
+
+            margin-top: 18px;
+
+            font-size: 13px;
+
+            color: var(--muted);
+        }
+
+        .form-link {
+            border: none;
+            background: none;
+
+            color: var(--primary);
+
+            font-weight: 700;
+        }
+
+        .login-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            margin-bottom: 25px;
+
+            background: var(--surface-2);
+
+            padding: 4px;
+
+            border-radius: 12px;
+        }
+
+        .login-tab {
+            border: none;
+            background: transparent;
+
+            padding: 10px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            color: var(--muted);
+        }
+
+        .login-tab.active {
+            background: white;
+            color: var(--primary);
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        #toastContainer {
+            position: fixed;
+
+            top: 22px;
+            right: 22px;
+
+            z-index: 10000;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 300px;
+
+            max-width: 390px;
+
+            padding: 15px 18px;
+
+            border-radius: 14px;
+
+            background: white;
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+            gap: 12px;
+
+            align-items: flex-start;
+
+            border-left: 4px solid var(--primary);
+
+            animation: toastIn 0.25s ease;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        #appPage {
+            display: none;
+
+            min-height: 100vh;
+        }
+
+        .app-shell {
+            display: grid;
+
+            grid-template-columns: 250px 1fr;
+
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background:
+                linear-gradient(
+                    180deg,
+                    #111438,
+                    #171a4a
+                );
+
+            color: white;
+
+            padding: 22px;
+
+            position: sticky;
+            top: 0;
+
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .brand-text {
+            color: white;
+        }
+
+        .sidebar .brand-text span {
+            color: #8b8df8;
+        }
+
+        .sidebar-nav {
+            margin-top: 35px;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .side-btn {
+            width: 100%;
+
+            padding: 12px 13px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: transparent;
+
+            color: #c7c9e7;
+
+            text-align: left;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            transition: 0.2s ease;
+        }
+
+        .side-btn:hover,
+        .side-btn.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .side-spacer {
+            flex: 1;
+        }
+
+        .sidebar-user {
+            padding: 15px;
+
+            background: rgba(255,255,255,0.06);
+
+            border-radius: 15px;
+
+            margin-bottom: 12px;
+        }
+
+        .sidebar-user-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .sidebar-user-role {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #aaaed0;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main-content {
+            padding: 28px;
+
+            max-width: 1600px;
+
+            width: 100%;
+
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 28px;
+        }
+
+        .welcome-title {
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            font-size: 26px;
+
+            margin-bottom: 5px;
+        }
+
+        .welcome-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .role-pill {
+            padding: 8px 12px;
+
+            border-radius: 100px;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           DASHBOARD CARDS
+        ========================================================= */
+
+        .balance-grid {
+            display: grid;
+
+            grid-template-columns:
+                1.6fr 1fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 20px;
+        }
+
+        .balance-card {
+            min-height: 180px;
+
+            border-radius: 22px;
+
+            padding: 25px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .balance-main {
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(255,255,255,0.18),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    135deg,
+                    #312e81,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            box-shadow:
+                0 22px 50px rgba(79,70,229,0.22);
+        }
+
+        .balance-main::after {
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            right: -60px;
+            bottom: -80px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.07);
+        }
+
+        .balance-small {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .balance-label {
+            font-size: 12px;
+            opacity: 0.75;
+
+            margin-bottom: 9px;
+        }
+
+        .balance-value {
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            font-size: 35px;
+
+            font-weight: 800;
+
+            letter-spacing: -1px;
+        }
+
+        .balance-main .balance-value {
+            color: white;
+        }
+
+        .balance-account {
+            margin-top: 18px;
+
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 11px;
+
+            opacity: 0.8;
+        }
+
+        .balance-small .balance-value {
+            font-size: 25px;
+
+            margin-top: 20px;
+        }
+
+        /* =========================================================
+           QUICK ACTIONS
+        ========================================================= */
+
+        .section-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            padding: 22px;
+
+            box-shadow: var(--shadow-sm);
+
+            margin-bottom: 20px;
+        }
+
+        .section-title-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            font-size: 17px;
+        }
+
+        .section-subtitle {
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: var(--muted);
+        }
+
+        .quick-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+        }
+
+        .quick-action {
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 18px;
+
+            text-align: left;
+
+            transition: 0.2s ease;
+        }
+
+        .quick-action:hover {
+            border-color: #c7d2fe;
+
+            background: #f8f9ff;
+
+            transform: translateY(-2px);
+        }
+
+        .quick-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--primary-light);
+
+            margin-bottom: 12px;
+
+            font-weight: 800;
+
+            color: var(--primary);
+        }
+
+        .quick-action h3 {
+            font-size: 13px;
+
+            margin-bottom: 4px;
+        }
+
+        .quick-action p {
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+        /* =========================================================
+           TRANSACTIONS
+        ========================================================= */
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transaction-item {
+            display: grid;
+
+            grid-template-columns:
+                45px 1fr auto;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: grid;
+
+            place-items: center;
+
+            font-weight: 800;
+        }
+
+        .transaction-icon.in {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .transaction-icon.out {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .transaction-icon.neutral {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .transaction-title {
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 4px;
+        }
+
+        .transaction-meta {
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+        .transaction-amount {
+            text-align: right;
+
+            font-size: 13px;
+
+            font-weight: 800;
+        }
+
+        .transaction-amount.in {
+            color: var(--success);
+        }
+
+        .transaction-amount.out {
+            color: var(--danger);
+        }
+
+        .transaction-empty {
+            padding: 35px 10px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           ADMIN
+        ========================================================= */
+
+        .admin-stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 17px;
+
+            padding: 20px;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            font-size: 28px;
+
+            font-weight: 800;
+
+            margin-top: 10px;
+        }
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 750px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 13px 12px;
+
+            text-align: left;
+
+            border-bottom: 1px solid #f1f5f9;
+
+            font-size: 12px;
+        }
+
+        .data-table th {
+            font-size: 11px;
+
+            color: var(--muted);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.4px;
+        }
+
+        .status {
+            display: inline-flex;
+
+            padding: 5px 9px;
+
+            border-radius: 100px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+        .status.success {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .status.failed {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .status.pending {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .feature-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .balance-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .balance-main {
+                grid-column: span 2;
+            }
+
+            .quick-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .admin-stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .landing-nav {
+                padding-top: 16px;
+            }
+
+            .nav-actions .btn-secondary {
+                display: none;
+            }
+
+            .hero {
+                margin-top: 35px;
+            }
+
+            .hero-title {
+                letter-spacing: -2px;
+            }
+
+            .hero-visual {
+                min-height: 440px;
+            }
+
+            .floating-card:nth-child(2) {
+                right: 0;
+            }
+
+            .floating-card:nth-child(3) {
+                left: 0;
+            }
+
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+
+                padding: 14px;
+
+                flex-direction: row;
+
+                align-items: center;
+
+                overflow-x: auto;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+
+                margin: 0 0 0 20px;
+            }
+
+            .side-btn {
+                width: auto;
+                white-space: nowrap;
+            }
+
+            .sidebar-user,
+            .side-spacer {
+                display: none;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .role-pill {
+                display: none;
+            }
+
+            .balance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .balance-main {
+                grid-column: auto;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+/* =========================================================
+   DEVELOPER PROFILE
+   ========================================================= */
+
+.developer-profile-section {
+    width: min(1200px, 92%);
+    margin: 0 auto 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-card {
+    width: min(480px, 100%);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.profile-image {
+    width: 110px;
+    height: 110px;
+    flex: 0 0 110px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    background: #f1f5f9;
+    margin-bottom: 16px;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+.profile-info {
+    width: 100%;
+}
+
+.profile-info h3 {
+    margin: 0 0 5px;
+    color: var(--text);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.profile-role {
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.profile-contact {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.profile-link:hover {
+    transform: translateY(-2px);
+    border-color: #c7d2fe;
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 760px) {
+    .developer-profile-section {
+        width: 92%;
+        margin-bottom: 70px;
+    }
+
+    .profile-card {
+        padding: 24px 18px;
+    }
+
+    .profile-image {
+        width: 95px;
+        height: 95px;
+        flex-basis: 95px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =============================================================
+     TOAST CONTAINER
+============================================================= -->
+
+<div id="toastContainer"></div>
+
+
+<!-- =============================================================
+     LANDING PAGE
+============================================================= -->
+
+<section id="landingPage">
+
+    <nav class="landing-nav">
+
+        <div class="brand">
+            <div class="brand-icon">N</div>
+
+            <div class="brand-text">
+                Nova<span>Bank</span>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button
+                class="btn btn-secondary"
+                onclick="openLogin('customer')"
+            >
+                Customer Login
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="openRegister()"
+            >
+                Open Account
+            </button>
+        </div>
+
+    </nav>
+
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                ✦ Next-generation virtual banking
+            </div>
+
+            <h1 class="hero-title">
+                Banking that feels
+                <span>effortless.</span>
+            </h1>
+
+            <p class="hero-description">
+                A premium digital banking experience for managing
+                virtual money, instant transfers, deposits,
+                withdrawals and transaction history — all from one
+                beautiful dashboard.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openRegister()"
+                >
+                    Create Your Account →
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="openLogin('customer')"
+                >
+                    Sign In
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-visual">
+
+            <div class="phone-card">
+
+                <div class="phone-top">
+                    <strong>NovaBank</strong>
+
+                    <span>•••</span>
+                </div>
+
+                <div class="phone-balance-label">
+                    Total Balance
+                </div>
+
+                <div class="phone-balance">
+                    ₹84,250.00
+                </div>
+
+                <div class="mini-card">
+
+                    <div class="mini-row">
+                        <span>Received</span>
+                        <strong>+₹12,500</strong>
+                    </div>
+
+                    <div class="mini-row">
+                        <span>Sent</span>
+                        <strong>-₹3,250</strong>
+                    </div>
+
+                    <div class="mini-row">
+                        <span>Status</span>
+                        <strong>● Active</strong>
+                    </div>
+
+                </div>
+
+                <div
+                    style="
+                        margin-top:40px;
+                        font-size:12px;
+                        opacity:.7;
+                    "
+                >
+                    VIRTUAL BANKING ACCOUNT
+                </div>
+
+            </div>
+
+
+            <div class="floating-card">
+
+                <div class="float-icon">✓</div>
+
+                <div>
+                    <strong style="font-size:13px;">
+                        Transfer complete
+                    </strong>
+
+                    <div style="
+                        font-size:11px;
+                        color:#64748b;
+                        margin-top:3px;
+                    ">
+                        Money sent instantly
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="floating-card">
+
+                <div class="float-icon">₹</div>
+
+                <div>
+                    <strong style="font-size:13px;">
+                        + ₹5,000
+                    </strong>
+
+                    <div style="
+                        font-size:11px;
+                        color:#64748b;
+                        margin-top:3px;
+                    ">
+                        Received from account
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="features">
+
+        <div class="section-heading">
+
+            <h2>Everything in one place</h2>
+
+            <p>
+                Designed around the Digital Banking System requirements.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">↔</div>
+
+                <h3>Instant Transfers</h3>
+
+                <p>
+                    Send virtual money to another customer account
+                    and instantly update both balances.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">₹</div>
+
+                <h3>Smart Wallet</h3>
+
+                <p>
+                    View your current balance, received amount,
+                    spending and account information.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">⌁</div>
+
+                <h3>Live Transactions</h3>
+
+                <p>
+                    Every successful deposit, withdrawal and transfer
+                    becomes part of your transaction history.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">♙</div>
+
+                <h3>Admin Control</h3>
+
+                <p>
+                    Authorized administrators can monitor accounts,
+                    transactions and reported issues.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         DEVELOPER PROFILE
+    ========================================================= -->
+
+    <section class="developer-profile-section">
+
+        <div class="profile-card">
+
+            <div class="profile-image">
+                <img
+                    src="pritam.jpeg"
+                    alt="Pritam Debnath"
+                >
+            </div>
+
+            <div class="profile-info">
+                <h3>Pritam Debnath</h3>
+
+                <p class="profile-role">
+                    Digital Banking System Developer
+                </p>
+
+                <div class="profile-contact">
+                    <a
+                        href="mailto:pd622830@gmail.com"
+                        class="profile-link"
+                    >
+                        <span>✉️</span>
+                        <span>pd622830@gmail.com</span>
+                    </a>
+
+                    <a
+                        href="https://www.linkedin.com/in/pritam-debnath-307286337/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="profile-link"
+                    >
+                        <span>💼</span>
+                        <span>LinkedIn Profile</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- =============================================================
+     APPLICATION
+============================================================= -->
+
+<section id="appPage">
+
+    <div class="app-shell">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    N
+                </div>
+
+                <div class="brand-text">
+                    Nova<span>Bank</span>
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-nav">
+
+                <button
+                    class="side-btn active"
+                    data-section="dashboardSection"
+                    onclick="showSection('dashboardSection', this)"
+                >
+                    ◈ Dashboard
+                </button>
+
+                <button
+                    class="side-btn"
+                    data-section="transferSection"
+                    onclick="showSection('transferSection', this)"
+                >
+                    ↔ Send Money
+                </button>
+
+                <button
+                    class="side-btn"
+                    data-section="depositSection"
+                    onclick="showSection('depositSection', this)"
+                >
+                    + Deposit
+                </button>
+
+                <button
+                    class="side-btn"
+                    data-section="withdrawSection"
+                    onclick="showSection('withdrawSection', this)"
+                >
+                    − Withdraw
+                </button>
+
+                <button
+                    class="side-btn"
+                    data-section="transactionsSection"
+                    onclick="showSection('transactionsSection', this)"
+                >
+                    ≡ Transactions
+                </button>
+
+                <button
+                    class="side-btn"
+                    data-section="issuesSection"
+                    onclick="showSection('issuesSection', this)"
+                >
+                    ! Report Issue
+                </button>
+
+                <button
+                    id="adminNavBtn"
+                    class="side-btn hidden"
+                    data-section="adminSection"
+                    onclick="showSection('adminSection', this)"
+                >
+                    ♙ Administration
+                </button>
+
+            </div>
+
+
+            <div class="side-spacer"></div>
+
+
+            <div class="sidebar-user">
+
+                <div
+                    id="sidebarUserName"
+                    class="sidebar-user-name"
+                >
+                    User
+                </div>
+
+                <div
+                    id="sidebarUserRole"
+                    class="sidebar-user-role"
+                >
+                    Customer
+                </div>
+
+            </div>
+
+
+            <button
+                class="side-btn logout-btn"
+                onclick="logout()"
+            >
+                ↪ Logout
+            </button>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="topbar">
+
+                <div>
+
+                    <div
+                        id="welcomeTitle"
+                        class="welcome-title"
+                    >
+                        Welcome back 👋
+                    </div>
+
+                    <div class="welcome-subtitle">
+                        Your digital banking overview
+                    </div>
+
+                </div>
+
+                <div class="topbar-right">
+
+                    <div
+                        id="rolePill"
+                        class="role-pill"
+                    >
+                        CUSTOMER
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CUSTOMER DASHBOARD
+            ================================================= -->
+
+            <section
+    id="dashboardSection"
+    class="app-section hidden"
+>
+
+                <div class="balance-grid">
+
+                    <div class="balance-card balance-main">
+
+                        <div class="balance-label">
+                            Available Balance
+                        </div>
+
+                        <div
+                            id="balanceValue"
+                            class="balance-value"
+                        >
+                            ₹0.00
+                        </div>
+
+                        <div class="balance-account">
+
+                            <span>
+                                Account
+                            </span>
+
+                            <strong
+                                id="accountNumber"
+                            >
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="balance-card balance-small">
+
+                        <div class="balance-label">
+                            Total Received
+                        </div>
+
+                        <div
+                            id="receivedValue"
+                            class="balance-value"
+                            style="color:#16a34a;"
+                        >
+                            ₹0.00
+                        </div>
+
+                    </div>
+
+
+                    <div class="balance-card balance-small">
+
+                        <div class="balance-label">
+                            Total Sent
+                        </div>
+
+                        <div
+                            id="sentValue"
+                            class="balance-value"
+                            style="color:#dc2626;"
+                        >
+                            ₹0.00
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Quick Actions
+                            </div>
+
+                            <div class="section-subtitle">
+                                Complete common banking tasks quickly.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quick-grid">
+
+                        <button
+                            class="quick-action"
+                            onclick="showSection('transferSection')"
+                        >
+
+                            <div class="quick-icon">
+                                ↗
+                            </div>
+
+                            <h3>
+                                Send Money
+                            </h3>
+
+                            <p>
+                                Transfer virtual money
+                            </p>
+
+                        </button>
+
+
+                        <button
+                            class="quick-action"
+                            onclick="showSection('depositSection')"
+                        >
+
+                            <div class="quick-icon">
+                                +
+                            </div>
+
+                            <h3>
+                                Deposit
+                            </h3>
+
+                            <p>
+                                Add virtual balance
+                            </p>
+
+                        </button>
+
+
+                        <button
+                            class="quick-action"
+                            onclick="showSection('withdrawSection')"
+                        >
+
+                            <div class="quick-icon">
+                                −
+                            </div>
+
+                            <h3>
+                                Withdraw
+                            </h3>
+
+                            <p>
+                                Remove virtual funds
+                            </p>
+
+                        </button>
+
+
+                        <button
+                            class="quick-action"
+                            onclick="showSection('transactionsSection')"
+                        >
+
+                            <div class="quick-icon">
+                                ≡
+                            </div>
+
+                            <h3>
+                                History
+                            </h3>
+
+                            <p>
+                                View transactions
+                            </p>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT TRANSACTIONS -->
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Recent Activity
+                            </div>
+
+                            <div class="section-subtitle">
+                                Your latest banking activity.
+                            </div>
+
+                        </div>
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="showSection('transactionsSection')"
+                        >
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="recentTransactions"
+                        class="transaction-list"
+                    >
+
+                        <div class="transaction-empty">
+                            Loading transactions...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 TRANSFER
+            ================================================= -->
+
+            <section
+                id="transferSection"
+                class="app-section hidden"
+            >
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Send Money
+                            </div>
+
+                            <div class="section-subtitle">
+                                Transfer virtual funds to another account.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            max-width:600px;
+                        "
+                    >
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Recipient Account Number
+                            </label>
+
+                            <input
+                                id="recipientAccount"
+                                class="input"
+                                type="text"
+                                placeholder="Enter recipient account number"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Amount
+                            </label>
+
+                            <input
+                                id="transferAmount"
+                                class="input"
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                placeholder="₹0.00"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Note
+                            </label>
+
+                            <input
+                                id="transferNote"
+                                class="input"
+                                type="text"
+                                maxlength="80"
+                                placeholder="Dinner, rent, project etc."
+                            >
+
+                        </div>
+
+
+                        <button
+                            id="transferBtn"
+                            class="btn btn-primary btn-full"
+                            onclick="transferMoney()"
+                        >
+                            Send Money →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DEPOSIT
+            ================================================= -->
+
+            <section
+                id="depositSection"
+                class="app-section hidden"
+            >
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Deposit Virtual Money
+                            </div>
+
+                            <div class="section-subtitle">
+                                Add virtual funds to your account.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="max-width:500px;">
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Deposit Amount
+                            </label>
+
+                            <input
+                                id="depositAmount"
+                                class="input"
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                placeholder="₹0.00"
+                            >
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-success btn-full"
+                            onclick="depositMoney()"
+                        >
+                            + Add Virtual Money
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 WITHDRAW
+            ================================================= -->
+
+            <section
+                id="withdrawSection"
+                class="app-section hidden"
+            >
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Withdraw
+                            </div>
+
+                            <div class="section-subtitle">
+                                Withdraw virtual funds from your account.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="max-width:500px;">
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Withdrawal Amount
+                            </label>
+
+                            <input
+                                id="withdrawAmount"
+                                class="input"
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                placeholder="₹0.00"
+                            >
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-danger btn-full"
+                            onclick="withdrawMoney()"
+                        >
+                            − Withdraw Money
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 TRANSACTIONS
+            ================================================= -->
+
+            <section
+                id="transactionsSection"
+                class="app-section hidden"
+            >
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Transaction History
+                            </div>
+
+                            <div class="section-subtitle">
+                                View your complete banking activity.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="fullTransactions"
+                        class="transaction-list"
+                    >
+
+                        <div class="transaction-empty">
+                            Loading...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 ISSUE REPORT
+            ================================================= -->
+
+            <section
+                id="issuesSection"
+                class="app-section hidden"
+            >
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Report Transaction Issue
+                            </div>
+
+                            <div class="section-subtitle">
+                                Report an issue related to a transaction.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="max-width:650px;">
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Transaction ID
+                            </label>
+
+                            <input
+                                id="issueTransactionId"
+                                class="input"
+                                type="text"
+                                placeholder="Enter transaction ID"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Issue Description
+                            </label>
+
+                            <textarea
+                                id="issueDescription"
+                                class="input"
+                                rows="5"
+                                placeholder="Explain what happened..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-primary btn-full"
+                            onclick="reportIssue()"
+                        >
+                            Submit Issue
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 ADMIN
+            ================================================= -->
+
+          <section
+    id="adminSection"
+    class="app-section"
+>
+
+                <div class="admin-stats">
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Customers
+                        </div>
+
+                        <div
+                            id="adminCustomers"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Transactions
+                        </div>
+
+                        <div
+                            id="adminTransactions"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Total Virtual Funds
+                        </div>
+
+                        <div
+                            id="adminFunds"
+                            class="stat-value"
+                        >
+                            ₹0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Reported Issues
+                        </div>
+
+                        <div
+                            id="adminIssues"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMER TABLE -->
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                Customer Accounts
+                            </div>
+
+                            <div class="section-subtitle">
+                                Monitor registered virtual banking accounts.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Account Number</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody
+                                id="customerTableBody"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADMIN TRANSACTIONS -->
+
+                <div class="section-card">
+
+                    <div class="section-title-row">
+
+                        <div>
+
+                            <div class="section-title">
+                                All Transactions
+                            </div>
+
+                            <div class="section-subtitle">
+                                Monitor system-wide transaction activity.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Type</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody
+                                id="adminTransactionBody"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================================
+     LOGIN MODAL
+============================================================= -->
+
+<div
+    id="loginModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2>Welcome back</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('loginModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="login-tabs">
+
+            <button
+                id="customerLoginTab"
+                class="login-tab active"
+                onclick="setLoginMode('customer')"
+            >
+                Customer
+            </button>
+
+            <button
+                id="adminLoginTab"
+                class="login-tab"
+                onclick="setLoginMode('admin')"
+            >
+                Administrator
+            </button>
+
+        </div>
+
+
+        <form
+            id="loginForm"
+            onsubmit="handleLogin(event)"
+        >
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input
+                    id="loginEmail"
+                    class="input"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input
+                    id="loginPassword"
+                    class="input"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                >
+
+            </div>
+
+
+            <button
+                id="loginBtn"
+                class="btn btn-primary btn-full"
+                type="submit"
+            >
+                Sign In
+            </button>
+
+        </form>
+
+
+        <div
+            id="loginRegisterFooter"
+            class="form-footer"
+        >
+
+            Don't have an account?
+
+            <button
+                class="form-link"
+                onclick="switchToRegister()"
+            >
+                Create one
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     REGISTER MODAL
+============================================================= -->
+
+<div
+    id="registerModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2>Create account</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('registerModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="registerForm"
+            onsubmit="handleRegister(event)"
+        >
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Full Name
+                </label>
+
+                <input
+                    id="registerName"
+                    class="input"
+                    type="text"
+                    required
+                    maxlength="70"
+                    placeholder="Your full name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input
+                    id="registerEmail"
+                    class="input"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input
+                    id="registerPassword"
+                    class="input"
+                    type="password"
+                    minlength="6"
+                    required
+                    placeholder="Minimum 6 characters"
+                >
+
+            </div>
+
+
+            <button
+                id="registerBtn"
+                class="btn btn-primary btn-full"
+                type="submit"
+            >
+                Create Digital Account
+            </button>
+
+        </form>
+
+
+        <div class="form-footer">
+
+            Already have an account?
+
+            <button
+                class="form-link"
+                onclick="switchToLogin()"
+            >
+                Sign in
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+/* ================================================================
+   FIREBASE CONFIGURATION
+================================================================ */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCPqN_xpObQWGUkYGO4KCFmjANkrPxBNmQ",
+    authDomain: "digital-banking-system-dd918.firebaseapp.com",
+    projectId: "digital-banking-system-dd918",
+    storageBucket: "digital-banking-system-dd918.firebasestorage.app",
+    messagingSenderId: "955494889382",
+    appId: "1:955494889382:web:2aaf76e2a78ac0918cc167"
+};
+
+
+/* ================================================================
+   INITIALIZE FIREBASE
+================================================================ */
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let currentUserData = null;
+let currentRole = "customer";
+let loginMode = "customer";
+let isRegistering = false;
+
+/* ================================================================
+   CONSTANTS
+================================================================ */
+
+const COLLECTIONS = {
+    accounts: "accounts",
+    transactions: "transactions",
+    issues: "transactionIssues",
+    admins: "admins"
+};
+
+
+/* ================================================================
+   UTILITY FUNCTIONS
+================================================================ */
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+    }).format(Number(amount || 0));
+}
+
+
+function formatDate(timestamp) {
+
+    if (!timestamp) {
+        return "—";
+    }
+
+    try {
+
+        const date = timestamp.toDate
+            ? timestamp.toDate()
+            : new Date(timestamp);
+
+        return new Intl.DateTimeFormat("en-IN", {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }).format(date);
+
+    } catch (error) {
+
+        return "—";
+    }
+}
+
+
+function generateAccountNumber() {
+
+    const randomPart =
+        Math.floor(
+            1000000000 +
+            Math.random() * 9000000000
+        );
+
+    return String(randomPart);
+}
+
+
+function generateCustomerId() {
+
+    return (
+        "CUS-" +
+        Date.now().toString().slice(-8) +
+        Math.floor(Math.random() * 100)
+    );
+}
+
+
+function showToast(
+    message,
+    type = "success"
+) {
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        `toast ${type}`;
+
+    const icon =
+        type === "success"
+            ? "✓"
+            : type === "error"
+                ? "!"
+                : "⚠";
+
+    toast.innerHTML = `
+        <div style="
+            font-size:18px;
+            font-weight:800;
+        ">
+            ${icon}
+        </div>
+
+        <div style="
+            font-size:13px;
+            line-height:1.5;
+        ">
+            ${escapeHtml(message)}
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.style.opacity = "0";
+        toast.style.transform =
+            "translateX(20px)";
+
+        setTimeout(() => {
+            toast.remove();
+        }, 250);
+
+    }, 3500);
+}
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ================================================================
+   MODAL
+================================================================ */
+
+function openModal(id) {
+    document
+        .getElementById(id)
+        .classList.add("active");
+}
+
+
+function closeModal(id) {
+    document
+        .getElementById(id)
+        .classList.remove("active");
+}
+
+
+function openRegister() {
+
+    closeModal("loginModal");
+
+    openModal("registerModal");
+}
+
+
+function openLogin(mode = "customer") {
+
+    closeModal("registerModal");
+
+    setLoginMode(mode);
+
+    openModal("loginModal");
+}
+
+
+function switchToRegister() {
+    openRegister();
+}
+
+
+function switchToLogin() {
+    openLogin("customer");
+}
+
+
+/* ================================================================
+   LOGIN MODE
+================================================================ */
+
+function setLoginMode(mode) {
+
+    loginMode = mode;
+
+    const customerTab =
+        document.getElementById(
+            "customerLoginTab"
+        );
+
+    const adminTab =
+        document.getElementById(
+            "adminLoginTab"
+        );
+
+    if (mode === "customer") {
+
+        customerTab.classList.add("active");
+        adminTab.classList.remove("active");
+
+        document.getElementById(
+            "loginRegisterFooter"
+        ).classList.remove("hidden");
+
+    } else {
+
+        customerTab.classList.remove("active");
+        adminTab.classList.add("active");
+
+        document.getElementById(
+            "loginRegisterFooter"
+        ).classList.add("hidden");
+    }
+}
+
+
+/* ================================================================
+   REGISTER
+================================================================ */
+
+async function handleRegister(event) {
+    event.preventDefault();
+
+    const name =
+        document.getElementById("registerName").value.trim();
+
+    const email =
+        document.getElementById("registerEmail").value.trim();
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    const button =
+        document.getElementById("registerBtn");
+
+    if (!name || !email || password.length < 6) {
+        showToast(
+            "Please enter valid registration details.",
+            "error"
+        );
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creating account...";
+
+    isRegistering = true;
+
+    try {
+        console.log("STEP 1: Creating Auth user...");
+
+        const credential =
+            await auth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
+
+        const user = credential.user;
+
+        console.log(
+            "STEP 1 SUCCESS:",
+            user.uid
+        );
+
+        await user.updateProfile({
+            displayName: name
+        });
+
+        console.log(
+            "STEP 2: Generating account number..."
+        );
+
+        const accountNumber =
+            generateAccountNumber();
+
+        const customerId =
+            generateCustomerId();
+
+        console.log(
+            "ACCOUNT NUMBER:",
+            accountNumber
+        );
+
+        console.log(
+            "STEP 3: Creating Firestore account..."
+        );
+
+        await db
+            .collection("accounts")
+            .doc(user.uid)
+            .set({
+                uid: user.uid,
+                customerId: customerId,
+                fullName: name,
+                email: email,
+                accountNumber: accountNumber,
+                balance: 0,
+                totalReceived: 0,
+                totalSent: 0,
+                role: "customer",
+                status: "active",
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+        console.log(
+            "STEP 3 SUCCESS: Firestore account created"
+        );
+
+        isRegistering = false;
+
+        closeModal("registerModal");
+
+        currentUser = user;
+
+        const snapshot =
+            await db
+                .collection("accounts")
+                .doc(user.uid)
+                .get();
+
+        currentUserData =
+            snapshot.data();
+
+        document.getElementById(
+            "landingPage"
+        ).style.display = "none";
+
+        document.getElementById(
+            "appPage"
+        ).style.display = "block";
+
+        configureInterface();
+
+        await loadDashboard();
+
+        showToast(
+            "Account created successfully!"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "REGISTRATION ERROR:",
+            error
+        );
+
+        console.error(
+            "ERROR CODE:",
+            error.code
+        );
+
+        console.error(
+            "ERROR MESSAGE:",
+            error.message
+        );
+
+        isRegistering = false;
+
+        showToast(
+            `${error.code || "error"}: ${
+                error.message || "Unable to create account."
+            }`,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent =
+            "Create Digital Account";
+    }
+}
+async function getUniqueAccountNumber() {
+
+    let accountNumber;
+
+    let exists = true;
+
+    while (exists) {
+
+        accountNumber =
+            generateAccountNumber();
+
+        const snapshot =
+            await db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .where(
+                    "accountNumber",
+                    "==",
+                    accountNumber
+                )
+                .limit(1)
+                .get();
+
+        exists =
+            !snapshot.empty;
+    }
+
+    return accountNumber;
+}
+
+
+/* ================================================================
+   LOGIN
+================================================================ */
+
+async function handleLogin(event) {
+
+    event.preventDefault();
+
+    const email =
+        document.getElementById(
+            "loginEmail"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "loginPassword"
+        ).value;
+
+    const button =
+        document.getElementById(
+            "loginBtn"
+        );
+
+    button.disabled = true;
+
+    button.textContent = "Signing in...";
+
+    try {
+
+        const credential =
+            await auth.signInWithEmailAndPassword(
+                email,
+                password
+            );
+
+        const user =
+            credential.user;
+
+
+        const accountSnapshot =
+            await db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .doc(user.uid)
+                .get();
+
+
+        if (!accountSnapshot.exists) {
+
+            await auth.signOut();
+
+            throw new Error(
+                "Account profile was not found."
+            );
+        }
+
+
+        const data =
+            accountSnapshot.data();
+
+
+        if (data.status === "blocked") {
+
+            await auth.signOut();
+
+            throw new Error(
+                "Your account has been blocked by the administrator."
+            );
+        }
+
+
+        if (loginMode === "admin") {
+
+            const adminSnapshot =
+                await db
+                    .collection(
+                        COLLECTIONS.admins
+                    )
+                    .doc(user.uid)
+                    .get();
+
+
+            if (!adminSnapshot.exists) {
+
+                await auth.signOut();
+
+                throw new Error(
+                    "This account is not authorized as an administrator."
+                );
+            }
+
+            currentRole = "admin";
+
+        } else {
+
+            currentRole = "customer";
+        }
+
+
+        if (loginMode === "admin") {
+
+    closeModal("loginModal");
+
+    showToast(
+        "Administrator login successful!"
+    );
+
+    setTimeout(() => {
+
+        window.location.href =
+            "admin-login.html";
+
+    }, 700);
+
+    return;
+}
+
+
+closeModal("loginModal");
+
+showToast(
+    "Login successful. Welcome back!"
+);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Invalid login credentials.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Sign In";
+    }
+}
+
+
+/* ================================================================
+   AUTH STATE
+================================================================ */
+
+auth.onAuthStateChanged(
+    async (user) => {
+
+        if (!user) {
+
+            currentUser = null;
+            currentUserData = null;
+
+            document.getElementById(
+                "landingPage"
+            ).style.display = "block";
+
+            document.getElementById(
+                "appPage"
+            ).style.display = "none";
+
+            return;
+        }
+
+
+        try {
+
+            currentUser = user;
+
+            const snapshot =
+                await db
+                    .collection(
+                        COLLECTIONS.accounts
+                    )
+                    .doc(user.uid)
+                    .get();
+
+            if (!snapshot.exists) {
+
+    console.error(
+        "User account profile missing."
+    );
+
+    // During registration the Firestore profile
+    // has not been created yet.
+    if (isRegistering) {
+        return;
+    }
+
+    await auth.signOut();
+    return;
+}
+
+
+            currentUserData =
+                snapshot.data();
+
+
+            document.getElementById(
+                "landingPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "appPage"
+            ).style.display = "block";
+
+
+            configureInterface();
+
+            await loadDashboard();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Unable to load your banking profile.",
+                "error"
+            );
+        }
+    }
+);
+
+
+/* ================================================================
+   CONFIGURE UI
+================================================================ */
+
+function configureInterface() {
+
+    const name =
+        currentUserData.fullName ||
+        currentUser.displayName ||
+        "Customer";
+
+
+    document.getElementById(
+        "welcomeTitle"
+    ).textContent =
+        `Welcome back, ${name.split(" ")[0]} 👋`;
+
+
+    document.getElementById(
+        "sidebarUserName"
+    ).textContent =
+        name;
+
+
+    document.getElementById(
+        "sidebarUserRole"
+    ).textContent =
+        currentRole === "admin"
+            ? "Bank Administrator"
+            : "Customer";
+
+
+    document.getElementById(
+        "rolePill"
+    ).textContent =
+        currentRole === "admin"
+            ? "ADMINISTRATOR"
+            : "CUSTOMER";
+
+
+    const adminBtn =
+        document.getElementById(
+            "adminNavBtn"
+        );
+
+
+    if (currentRole === "admin") {
+
+        adminBtn.classList.remove("hidden");
+
+    } else {
+
+        adminBtn.classList.add("hidden");
+    }
+}
+
+
+/* ================================================================
+   SECTION NAVIGATION
+================================================================ */
+
+function showSection(
+    sectionId,
+    clickedButton = null
+) {
+
+    document
+        .querySelectorAll(".app-section")
+        .forEach(section => {
+
+            section.classList.add("hidden");
+
+        });
+
+
+    const section =
+        document.getElementById(
+            sectionId
+        );
+
+
+    if (section) {
+        section.classList.remove("hidden");
+    }
+
+
+    document
+        .querySelectorAll(".side-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    if (clickedButton) {
+
+        clickedButton.classList.add("active");
+
+    } else {
+
+        const matchingButton =
+            document.querySelector(
+                `.side-btn[data-section="${sectionId}"]`
+            );
+
+        if (matchingButton) {
+            matchingButton.classList.add("active");
+        }
+    }
+
+
+    if (
+        sectionId ===
+        "transactionsSection"
+    ) {
+
+        loadTransactions();
+    }
+
+
+    if (
+        sectionId ===
+        "adminSection" &&
+        currentRole === "admin"
+    ) {
+
+        loadAdminDashboard();
+    }
+}
+
+
+/* ================================================================
+   LOAD DASHBOARD
+================================================================ */
+
+async function loadDashboard() {
+
+    if (!currentUser) return;
+
+
+    try {
+
+        const snapshot =
+            await db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .doc(currentUser.uid)
+                .get();
+
+
+        if (snapshot.exists) {
+
+            currentUserData =
+                snapshot.data();
+        }
+
+
+        updateBalanceUI();
+
+        await loadRecentTransactions();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Failed to refresh dashboard.",
+            "error"
+        );
+    }
+}
+
+
+function updateBalanceUI() {
+
+    const balance =
+        Number(
+            currentUserData.balance || 0
+        );
+
+    const received =
+        Number(
+            currentUserData.totalReceived || 0
+        );
+
+    const sent =
+        Number(
+            currentUserData.totalSent || 0
+        );
+
+
+    document.getElementById(
+        "balanceValue"
+    ).textContent =
+        formatCurrency(balance);
+
+
+    document.getElementById(
+        "receivedValue"
+    ).textContent =
+        formatCurrency(received);
+
+
+    document.getElementById(
+        "sentValue"
+    ).textContent =
+        formatCurrency(sent);
+
+
+    document.getElementById(
+        "accountNumber"
+    ).textContent =
+        currentUserData.accountNumber ||
+        "—";
+}
+
+
+/* ================================================================
+   TRANSACTION CREATION
+================================================================ */
+
+async function createTransaction(data) {
+
+    const transactionRef =
+        db
+            .collection(
+                COLLECTIONS.transactions
+            )
+            .doc();
+
+
+    await transactionRef.set({
+
+        transactionId:
+            transactionRef.id,
+
+        ...data,
+
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+
+    return transactionRef.id;
+}
+
+
+/* ================================================================
+   DEPOSIT
+================================================================ */
+
+async function depositMoney() {
+
+    if (!currentUser) return;
+
+
+    const input =
+        document.getElementById(
+            "depositAmount"
+        );
+
+    const amount =
+        Number(input.value);
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Enter a valid deposit amount.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const userRef =
+        db
+            .collection(
+                COLLECTIONS.accounts
+            )
+            .doc(currentUser.uid);
+
+
+    try {
+
+        await db.runTransaction(
+            async (transaction) => {
+
+                const userDoc =
+                    await transaction.get(
+                        userRef
+                    );
+
+                if (!userDoc.exists) {
+                    throw new Error(
+                        "Account not found."
+                    );
+                }
+
+
+                const data =
+                    userDoc.data();
+
+
+                const newBalance =
+                    Number(data.balance || 0) +
+                    amount;
+
+
+                transaction.update(
+                    userRef,
+                    {
+                        balance: newBalance,
+
+                        totalReceived:
+                            Number(
+                                data.totalReceived ||
+                                0
+                            ) + amount,
+
+                        updatedAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+
+
+                const transactionRef =
+                    db
+                        .collection(
+                            COLLECTIONS.transactions
+                        )
+                        .doc();
+
+
+                transaction.set(
+                    transactionRef,
+                    {
+
+                        transactionId:
+                            transactionRef.id,
+
+                        type: "deposit",
+
+                        status: "completed",
+
+                        amount,
+
+                        fromAccount:
+                            "SYSTEM",
+
+                        toAccount:
+                            data.accountNumber,
+
+                        userId:
+                            currentUser.uid,
+
+                        description:
+                            "Virtual money deposit",
+
+                        createdAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+            }
+        );
+
+
+        input.value = "";
+
+        showToast(
+            `${formatCurrency(amount)} added successfully.`
+        );
+
+
+        await loadDashboard();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Deposit failed.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================================================
+   WITHDRAW
+================================================================ */
+
+async function withdrawMoney() {
+
+    if (!currentUser) return;
+
+
+    const input =
+        document.getElementById(
+            "withdrawAmount"
+        );
+
+    const amount =
+        Number(input.value);
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Enter a valid withdrawal amount.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const userRef =
+        db
+            .collection(
+                COLLECTIONS.accounts
+            )
+            .doc(currentUser.uid);
+
+
+    try {
+
+        await db.runTransaction(
+            async (transaction) => {
+
+                const userDoc =
+                    await transaction.get(
+                        userRef
+                    );
+
+                if (!userDoc.exists) {
+
+                    throw new Error(
+                        "Account not found."
+                    );
+                }
+
+
+                const data =
+                    userDoc.data();
+
+
+                const currentBalance =
+                    Number(data.balance || 0);
+
+
+                if (
+                    amount >
+                    currentBalance
+                ) {
+
+                    throw new Error(
+                        "Insufficient virtual balance."
+                    );
+                }
+
+
+                transaction.update(
+                    userRef,
+                    {
+
+                        balance:
+                            currentBalance -
+                            amount,
+
+                        updatedAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+
+
+                const transactionRef =
+                    db
+                        .collection(
+                            COLLECTIONS.transactions
+                        )
+                        .doc();
+
+
+                transaction.set(
+                    transactionRef,
+                    {
+
+                        transactionId:
+                            transactionRef.id,
+
+                        type: "withdrawal",
+
+                        status: "completed",
+
+                        amount,
+
+                        fromAccount:
+                            data.accountNumber,
+
+                        toAccount:
+                            "SYSTEM",
+
+                        userId:
+                            currentUser.uid,
+
+                        description:
+                            "Virtual money withdrawal",
+
+                        createdAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+            }
+        );
+
+
+        input.value = "";
+
+        showToast(
+            `${formatCurrency(amount)} withdrawn successfully.`
+        );
+
+
+        await loadDashboard();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Withdrawal failed.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================================================
+   TRANSFER
+================================================================ */
+
+async function transferMoney() {
+
+    if (!currentUser) return;
+
+
+    const recipientAccount =
+        document
+            .getElementById(
+                "recipientAccount"
+            )
+            .value
+            .trim();
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "transferAmount"
+            ).value
+        );
+
+
+    const note =
+        document
+            .getElementById(
+                "transferNote"
+            )
+            .value
+            .trim();
+
+
+    if (!recipientAccount) {
+
+        showToast(
+            "Enter the recipient account number.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Enter a valid transfer amount.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        recipientAccount ===
+        currentUserData.accountNumber
+    ) {
+
+        showToast(
+            "You cannot transfer money to your own account.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const transferButton =
+        document.getElementById(
+            "transferBtn"
+        );
+
+
+    transferButton.disabled = true;
+    transferButton.textContent =
+        "Processing transfer...";
+
+
+    try {
+
+        const recipientQuery =
+            await db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .where(
+                    "accountNumber",
+                    "==",
+                    recipientAccount
+                )
+                .limit(1)
+                .get();
+
+
+        if (recipientQuery.empty) {
+
+            throw new Error(
+                "Recipient account was not found."
+            );
+        }
+
+
+        const recipientDoc =
+            recipientQuery.docs[0];
+
+
+        const senderRef =
+            db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .doc(currentUser.uid);
+
+
+        const recipientRef =
+            db
+                .collection(
+                    COLLECTIONS.accounts
+                )
+                .doc(recipientDoc.id);
+
+
+        const transactionRef =
+            db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .doc();
+
+
+        await db.runTransaction(
+            async (transaction) => {
+
+                const senderSnapshot =
+                    await transaction.get(
+                        senderRef
+                    );
+
+
+                const recipientSnapshot =
+                    await transaction.get(
+                        recipientRef
+                    );
+
+
+                if (
+                    !senderSnapshot.exists ||
+                    !recipientSnapshot.exists
+                ) {
+
+                    throw new Error(
+                        "One of the accounts no longer exists."
+                    );
+                }
+
+
+                const sender =
+                    senderSnapshot.data();
+
+
+                const recipient =
+                    recipientSnapshot.data();
+
+
+                const senderBalance =
+                    Number(
+                        sender.balance || 0
+                    );
+
+
+                if (
+                    senderBalance <
+                    amount
+                ) {
+
+                    throw new Error(
+                        "Insufficient balance for this transfer."
+                    );
+                }
+
+
+                const recipientBalance =
+                    Number(
+                        recipient.balance || 0
+                    );
+
+
+                transaction.update(
+                    senderRef,
+                    {
+
+                        balance:
+                            senderBalance -
+                            amount,
+
+                        totalSent:
+                            Number(
+                                sender.totalSent ||
+                                0
+                            ) + amount,
+
+                        updatedAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+
+
+                transaction.update(
+                    recipientRef,
+                    {
+
+                        balance:
+                            recipientBalance +
+                            amount,
+
+                        totalReceived:
+                            Number(
+                                recipient.totalReceived ||
+                                0
+                            ) + amount,
+
+                        updatedAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+
+
+                transaction.set(
+                    transactionRef,
+                    {
+
+                        transactionId:
+                            transactionRef.id,
+
+                        type:
+                            "transfer",
+
+                        status:
+                            "completed",
+
+                        amount,
+
+                        fromUserId:
+                            currentUser.uid,
+
+                        toUserId:
+                            recipientDoc.id,
+
+                        fromAccount:
+                            sender.accountNumber,
+
+                        toAccount:
+                            recipient.accountNumber,
+
+                        fromName:
+                            sender.fullName,
+
+                        toName:
+                            recipient.fullName,
+
+                        description:
+                            note ||
+                            "Virtual money transfer",
+
+                        createdAt:
+                            firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                );
+            }
+        );
+
+
+        document.getElementById(
+            "recipientAccount"
+        ).value = "";
+
+        document.getElementById(
+            "transferAmount"
+        ).value = "";
+
+        document.getElementById(
+            "transferNote"
+        ).value = "";
+
+
+        showToast(
+            `${formatCurrency(amount)} sent successfully to ${recipientAccount}.`
+        );
+
+
+        await loadDashboard();
+
+
+        showSection(
+            "dashboardSection"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Transfer failed.",
+            "error"
+        );
+
+    } finally {
+
+        transferButton.disabled = false;
+
+        transferButton.textContent =
+            "Send Money →";
+    }
+}
+
+
+/* ================================================================
+   LOAD RECENT TRANSACTIONS
+================================================================ */
+
+async function loadRecentTransactions() {
+
+    if (!currentUser) return;
+
+
+    const container =
+        document.getElementById(
+            "recentTransactions"
+        );
+
+
+    try {
+
+        const sent =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "fromUserId",
+                    "==",
+                    currentUser.uid
+                )
+                .limit(20)
+                .get();
+
+
+        const received =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "toUserId",
+                    "==",
+                    currentUser.uid
+                )
+                .limit(20)
+                .get();
+
+
+        const own =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "userId",
+                    "==",
+                    currentUser.uid
+                )
+                .limit(20)
+                .get();
+
+
+        const map =
+            new Map();
+
+
+        [...sent.docs, ...received.docs, ...own.docs]
+            .forEach(doc => {
+
+                map.set(
+                    doc.id,
+                    {
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                );
+
+            });
+
+
+        const transactions =
+            [...map.values()]
+                .sort(
+                    (a,b) => {
+
+                        const ad =
+                            a.createdAt?.toMillis
+                                ? a.createdAt.toMillis()
+                                : 0;
+
+                        const bd =
+                            b.createdAt?.toMillis
+                                ? b.createdAt.toMillis()
+                                : 0;
+
+                        return bd - ad;
+                    }
+                )
+                .slice(0, 5);
+
+
+        renderTransactionList(
+            container,
+            transactions
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="transaction-empty">
+                Unable to load transactions.
+            </div>
+        `;
+    }
+}
+
+
+/* ================================================================
+   LOAD ALL TRANSACTIONS
+================================================================ */
+
+async function loadTransactions() {
+
+    if (!currentUser) return;
+
+
+    const container =
+        document.getElementById(
+            "fullTransactions"
+        );
+
+
+    container.innerHTML = `
+        <div class="transaction-empty">
+            Loading transactions...
+        </div>
+    `;
+
+
+    try {
+
+        const sent =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "fromUserId",
+                    "==",
+                    currentUser.uid
+                )
+                .get();
+
+
+        const received =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "toUserId",
+                    "==",
+                    currentUser.uid
+                )
+                .get();
+
+
+        const own =
+            await db
+                .collection(
+                    COLLECTIONS.transactions
+                )
+                .where(
+                    "userId",
+                    "==",
+                    currentUser.uid
+                )
+                .get();
+
+
+        const map =
+            new Map();
+
+
+        [...sent.docs, ...received.docs, ...own.docs]
+            .forEach(doc => {
+
+                map.set(
+                    doc.id,
+                    {
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                );
+
+            });
+
+
+        const transactions =
+            [...map.values()]
+                .sort(
+                    (a,b) => {
+
+                        const ad =
+                            a.createdAt?.toMillis
+                                ? a.createdAt.toMillis()
+                                : 0;
+
+                        const bd =
+                            b.createdAt?.toMillis
+                                ? b.createdAt.toMillis()
+                                : 0;
+
+                        return bd - ad;
+                    }
+                );
+
+
+        renderTransactionList(
+            container,
+            transactions,
+            true
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="transaction-empty">
+                Unable to load transaction history.
+            </div>
+        `;
+    }
+}
+
+
+/* ================================================================
+   RENDER TRANSACTION LIST
+================================================================ */
+
+function renderTransactionList(
+    container,
+    transactions,
+    showEmpty = false
+) {
+
+    if (!transactions.length) {
+
+        container.innerHTML = `
+            <div class="transaction-empty">
+                ${
+                    showEmpty
+                        ? "No transactions found yet."
+                        : "No recent transactions."
+                }
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        transactions
+            .map(tx => {
+
+                const isIncoming =
+                    isTransactionIncoming(tx);
+
+
+                const iconClass =
+                    tx.type === "transfer"
+                        ? (
+                            isIncoming
+                                ? "in"
+                                : "out"
+                          )
+                        : tx.type === "deposit"
+                            ? "in"
+                            : "out";
+
+
+                const icon =
+                    tx.type === "transfer"
+                        ? (
+                            isIncoming
+                                ? "↓"
+                                : "↑"
+                          )
+                        : tx.type === "deposit"
+                            ? "+"
+                            : "−";
+
+
+                const title =
+                    tx.type === "transfer"
+                        ? (
+                            isIncoming
+                                ? `Received from ${escapeHtml(tx.fromName || tx.fromAccount || "another account")}`
+                                : `Sent to ${escapeHtml(tx.toName || tx.toAccount || "another account")}`
+                          )
+                        : tx.type === "deposit"
+                            ? "Virtual Deposit"
+                            : "Virtual Withdrawal";
+
+
+                const amountPrefix =
+                    isIncoming
+                        ? "+"
+                        : "-";
+
+
+                return `
+
+                    <div class="transaction-item">
+
+                        <div
+                            class="
+                                transaction-icon
+                                ${iconClass}
+                            "
+                        >
+                            ${icon}
+                        </div>
+
+
+                        <div>
+
+                            <div class="transaction-title">
+                                ${title}
+                            </div>
+
+                            <div class="transaction-meta">
+
+                                ${
+                                    escapeHtml(
+                                        tx.description ||
+                                        tx.type
+                                    )
+                                }
+
+                                ·
+
+                                ${formatDate(tx.createdAt)}
+
+                                ${
+                                    tx.transactionId
+                                        ? ` · ${escapeHtml(
+                                            tx.transactionId.slice(0, 10)
+                                          )}`
+                                        : ""
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                transaction-amount
+                                ${isIncoming ? "in" : "out"}
+                            "
+                        >
+
+                            ${amountPrefix}
+                            ${formatCurrency(tx.amount)}
+
+                        </div>
+
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+
+function isTransactionIncoming(tx) {
+
+    if (tx.type === "deposit") {
+        return true;
+    }
+
+    if (tx.type === "withdrawal") {
+        return false;
+    }
+
+    return (
+        tx.toUserId ===
+        currentUser.uid
+    );
+}
+
+
+/* ================================================================
+   REPORT ISSUE
+================================================================ */
+
+async function reportIssue() {
+
+    if (!currentUser) return;
+
+
+    const transactionId =
+        document
+            .getElementById(
+                "issueTransactionId"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "issueDescription"
+            )
+            .value
+            .trim();
+
+
+    if (
+        !transactionId ||
+        !description
+    ) {
+
+        showToast(
+            "Please provide both transaction ID and issue description.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const issueRef =
+            db
+                .collection(
+                    COLLECTIONS.issues
+                )
+                .doc();
+
+
+        await issueRef.set({
+
+            issueId:
+                issueRef.id,
+
+            transactionId,
+
+            userId:
+                currentUser.uid,
+
+            customerName:
+                currentUserData.fullName,
+
+            customerEmail:
+                currentUserData.email,
+
+            description,
+
+            status:
+                "open",
+
+            resolution:
+                "",
+
+            createdAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+
+            updatedAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+
+        document.getElementById(
+            "issueTransactionId"
+        ).value = "";
+
+        document.getElementById(
+            "issueDescription"
+        ).value = "";
+
+
+        showToast(
+            "Issue submitted successfully. Reference: " +
+            issueRef.id
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Unable to submit the issue.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================================================
+   ADMIN DASHBOARD
+================================================================ */
+
+async function loadAdminDashboard() {
+
+    if (
+        !currentUser ||
+        currentRole !== "admin"
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const [
+            customersSnapshot,
+            transactionsSnapshot,
+            issuesSnapshot
+        ] =
+            await Promise.all([
+
+                db
+                    .collection(
+                        COLLECTIONS.accounts
+                    )
+                    .get(),
+
+                db
+                    .collection(
+                        COLLECTIONS.transactions
+                    )
+                    .get(),
+
+                db
+                    .collection(
+                        COLLECTIONS.issues
+                    )
+                    .get()
+            ]);
+
+
+        const customers =
+            customersSnapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+
+        const transactions =
+            transactionsSnapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+
+        const issues =
+            issuesSnapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+
+        const totalFunds =
+            customers.reduce(
+                (sum, customer) =>
+                    sum +
+                    Number(
+                        customer.balance || 0
+                    ),
+                0
+            );
+
+
+        document.getElementById(
+            "adminCustomers"
+        ).textContent =
+            customers.length;
+
+
+        document.getElementById(
+            "adminTransactions"
+        ).textContent =
+            transactions.length;
+
+
+        document.getElementById(
+            "adminFunds"
+        ).textContent =
+            formatCurrency(totalFunds);
+
+
+        document.getElementById(
+            "adminIssues"
+        ).textContent =
+            issues.length;
+
+
+        renderCustomerTable(
+            customers
+        );
+
+
+        renderAdminTransactionTable(
+            transactions
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Unable to load administration data.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================================================
+   CUSTOMER TABLE
+================================================================ */
+
+function renderCustomerTable(
+    customers
+) {
+
+    const tbody =
+        document.getElementById(
+            "customerTableBody"
+        );
+
+
+    if (!customers.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    No customer accounts found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+        customers
+            .filter(
+                customer =>
+                    customer.role !== "admin"
+            )
+            .map(customer => {
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHtml(
+                                    customer.fullName ||
+                                    "Unknown"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                customer.email ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                customer.accountNumber ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${formatCurrency(
+                                    customer.balance
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="
+                                    status
+                                    ${
+                                        customer.status ===
+                                        "active"
+                                            ? "success"
+                                            : "failed"
+                                    }
+                                "
+                            >
+                                ${
+                                    escapeHtml(
+                                        customer.status ||
+                                        "unknown"
+                                    )
+                                }
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+            })
+            .join("");
+}
+
+
+/* ================================================================
+   ADMIN TRANSACTION TABLE
+================================================================ */
+
+function renderAdminTransactionTable(
+    transactions
+) {
+
+    const tbody =
+        document.getElementById(
+            "adminTransactionBody"
+        );
+
+
+    const sorted =
+        transactions.sort(
+            (a,b) => {
+
+                const ad =
+                    a.createdAt?.toMillis
+                        ? a.createdAt.toMillis()
+                        : 0;
+
+                const bd =
+                    b.createdAt?.toMillis
+                        ? b.createdAt.toMillis()
+                        : 0;
+
+                return bd - ad;
+            }
+        );
+
+
+    if (!sorted.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    No transactions found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+        sorted
+            .slice(0, 100)
+            .map(tx => {
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHtml(
+                                    tx.transactionId?.slice(
+                                        0,
+                                        10
+                                    ) ||
+                                    tx.id.slice(
+                                        0,
+                                        10
+                                    )
+                                )}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                tx.type ||
+                                "—"
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                tx.fromAccount ||
+                                "SYSTEM"
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                tx.toAccount ||
+                                "SYSTEM"
+                            )}
+                        </td>
+
+
+                        <td>
+                            <strong>
+                                ${formatCurrency(
+                                    tx.amount
+                                )}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            ${formatDate(
+                                tx.createdAt
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="
+                                    status
+                                    ${
+                                        tx.status ===
+                                        "completed"
+                                            ? "success"
+                                            : tx.status ===
+                                              "pending"
+                                                ? "pending"
+                                                : "failed"
+                                    }
+                                "
+                            >
+                                ${escapeHtml(
+                                    tx.status ||
+                                    "unknown"
+                                )}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+            })
+            .join("");
+}
+
+
+/* ================================================================
+   LOGOUT
+================================================================ */
+
+async function logout() {
+
+    try {
+
+        await auth.signOut();
+
+        showToast(
+            "You have been logged out."
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Logout failed.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================================================
+   CLICK OUTSIDE MODAL
+================================================================ */
+
+document
+    .querySelectorAll(".modal-overlay")
+    .forEach(modal => {
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    modal.classList.remove(
+                        "active"
+                    );
+                }
+
+            }
+        );
+    });
+
+
+/* ================================================================
+   KEYBOARD ESCAPE
+================================================================ */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Escape") {
+
+            document
+                .querySelectorAll(
+                    ".modal-overlay.active"
+                )
+                .forEach(modal => {
+
+                    modal.classList.remove(
+                        "active"
+                    );
+                });
+        }
+    }
+);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NovaBank - Administration</title>
+
+    <style>
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #f5f7fb;
+
+            color:
+                #1f2937;
+
+            min-height:
+                100vh;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 250px;
+
+            background:
+                #111827;
+
+            color: white;
+
+            padding:
+                25px 18px;
+
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+
+            font-weight: bold;
+
+            margin-bottom: 40px;
+        }
+
+        .logo span {
+            color:
+                #60a5fa;
+        }
+
+        .admin-info {
+            background:
+                #1f2937;
+
+            padding:
+                16px;
+
+            border-radius:
+                12px;
+
+            margin-bottom:
+                30px;
+        }
+
+        .admin-profile-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-profile-photo {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 20%;
+            border: 2px solid #60a5fa;
+            flex-shrink: 0;
+        }
+
+        .admin-profile-text {
+            min-width: 0;
+        }
+
+        .admin-info small {
+            display:
+                block;
+
+            color:
+                #9ca3af;
+
+            font-size:
+                12px;
+        }
+
+        .admin-info strong {
+            display:
+                block;
+
+            margin:
+                6px 0;
+
+            font-size:
+                15px;
+        }
+
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .nav-btn {
+            width: 100%;
+
+            border: none;
+
+            background:
+                transparent;
+
+            color:
+                #d1d5db;
+
+            text-align:
+                left;
+
+            padding:
+                13px 15px;
+
+            margin-bottom:
+                8px;
+
+            border-radius:
+                9px;
+
+            cursor:
+                pointer;
+
+            font-size:
+                15px;
+
+            transition:
+                .2s ease;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background:
+                #2563eb;
+
+            color:
+                white;
+        }
+
+        .logout {
+            position:
+                absolute;
+
+            bottom:
+                25px;
+
+            left:
+                18px;
+
+            width:
+                calc(100% - 36px);
+
+            background:
+                #dc2626;
+
+            color:
+                white;
+        }
+
+        .logout:hover {
+            background:
+                #b91c1c;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            margin-left:
+                250px;
+
+            padding:
+                30px;
+
+            min-height:
+                100vh;
+        }
+
+        .topbar {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            margin-bottom:
+                30px;
+
+            gap:
+                15px;
+        }
+
+        .topbar h1 {
+            font-size:
+                28px;
+
+            margin-bottom:
+                5px;
+        }
+
+        .topbar p {
+            color:
+                #6b7280;
+
+            font-size:
+                14px;
+        }
+
+        .admin-badge {
+            background:
+                #dbeafe;
+
+            color:
+                #1d4ed8;
+
+            padding:
+                8px 14px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+        }
+
+
+        /* =========================================================
+           STATISTICS
+        ========================================================= */
+
+        .stats {
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(
+                        180px,
+                        1fr
+                    )
+                );
+
+            gap:
+                18px;
+
+            margin-bottom:
+                30px;
+        }
+
+        .stat-card {
+            background:
+                white;
+
+            padding:
+                22px;
+
+            border-radius:
+                14px;
+
+            box-shadow:
+                0 3px 15px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .06
+                );
+
+            border:
+                1px solid
+                #edf0f5;
+
+            transition:
+                .2s ease;
+        }
+
+        .stat-card:hover {
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 10px 25px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .09
+                );
+        }
+
+        .stat-card p {
+            color:
+                #6b7280;
+
+            font-size:
+                14px;
+
+            margin-bottom:
+                10px;
+        }
+
+        .stat-card h2 {
+            font-size:
+                27px;
+
+            color:
+                #111827;
+        }
+
+
+        /* =========================================================
+           SECTIONS
+        ========================================================= */
+
+        .section {
+            background:
+                white;
+
+            border-radius:
+                14px;
+
+            padding:
+                24px;
+
+            margin-bottom:
+                25px;
+
+            box-shadow:
+                0 3px 15px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .06
+                );
+
+            border:
+                1px solid
+                #edf0f5;
+        }
+
+        .section-header {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                20px;
+        }
+
+        .section-header h2 {
+            font-size:
+                20px;
+        }
+
+        .section-description {
+            color:
+                #6b7280;
+
+            font-size:
+                13px;
+
+            margin-top:
+                4px;
+        }
+
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
+        .search {
+            padding:
+                11px 14px;
+
+            border:
+                1px solid
+                #d1d5db;
+
+            border-radius:
+                8px;
+
+            width:
+                260px;
+
+            outline:
+                none;
+
+            background:
+                white;
+        }
+
+        .search:focus {
+            border-color:
+                #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    .1
+                );
+        }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        .table-container {
+            width:
+                100%;
+
+            overflow-x:
+                auto;
+        }
+
+        table {
+            width:
+                100%;
+
+            border-collapse:
+                collapse;
+
+            min-width:
+                800px;
+        }
+
+        th {
+            background:
+                #f3f4f6;
+
+            color:
+                #4b5563;
+
+            text-align:
+                left;
+
+            padding:
+                13px;
+
+            font-size:
+                13px;
+
+            white-space:
+                nowrap;
+        }
+
+        td {
+            padding:
+                14px 13px;
+
+            border-bottom:
+                1px solid
+                #e5e7eb;
+
+            font-size:
+                14px;
+        }
+
+        tr:hover {
+            background:
+                #f9fafb;
+        }
+
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .status {
+            display:
+                inline-block;
+
+            padding:
+                5px 10px;
+
+            border-radius:
+                15px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            text-transform:
+                capitalize;
+        }
+
+        .active {
+            background:
+                #dcfce7;
+
+            color:
+                #166534;
+        }
+
+        .blocked {
+            background:
+                #fee2e2;
+
+            color:
+                #991b1b;
+        }
+
+        .pending {
+            background:
+                #fef3c7;
+
+            color:
+                #92400e;
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            border:
+                none;
+
+            padding:
+                8px 12px;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            transition:
+                .2s ease;
+        }
+
+        .btn-block {
+            background:
+                #fee2e2;
+
+            color:
+                #b91c1c;
+        }
+
+        .btn-block:hover {
+            background:
+                #fecaca;
+        }
+
+        .btn-unblock {
+            background:
+                #dcfce7;
+
+            color:
+                #166534;
+        }
+
+        .btn-unblock:hover {
+            background:
+                #bbf7d0;
+        }
+
+
+        /* =========================================================
+           LOADING
+        ========================================================= */
+
+        .loading {
+            text-align:
+                center;
+
+            padding:
+                35px;
+
+            color:
+                #6b7280;
+        }
+
+        .error {
+            background:
+                #fee2e2;
+
+            color:
+                #991b1b;
+
+            padding:
+                15px;
+
+            border-radius:
+                10px;
+
+            margin-bottom:
+                20px;
+        }
+
+        .empty-state {
+            text-align:
+                center;
+
+            padding:
+                35px;
+
+            color:
+                #6b7280;
+        }
+
+        .session-warning {
+            margin-bottom:
+                25px;
+
+            padding:
+                15px 18px;
+
+            border-radius:
+                10px;
+
+            background:
+                #fff7ed;
+
+            color:
+                #9a3412;
+
+            border:
+                1px solid
+                #fed7aa;
+
+            display:
+                none;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position:
+                    relative;
+
+                width:
+                    100%;
+
+                height:
+                    auto;
+
+                min-height:
+                    auto;
+
+                padding:
+                    20px;
+            }
+
+            .logout {
+                position:
+                    static;
+
+                margin-top:
+                    20px;
+
+                width:
+                    100%;
+            }
+
+            .main {
+                margin-left:
+                    0;
+
+                padding:
+                    18px;
+            }
+
+            .topbar {
+                align-items:
+                    flex-start;
+
+                gap:
+                    15px;
+
+                flex-direction:
+                    column;
+            }
+
+            .section-header {
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+            }
+
+            .search {
+                width:
+                    100%;
+            }
+
+            .stats {
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Nova<span>Bank</span>
+    </div>
+
+
+    <div class="admin-info">
+
+        <div class="admin-profile-row">
+
+            <img
+                class="admin-profile-photo"
+                src="pritam.jpeg"
+                alt="Pritam Debnath"
+            >
+
+            <div class="admin-profile-text">
+
+                <small>
+                    Administrator
+                </small>
+
+                <strong id="adminName">
+                    Loading...
+                </strong>
+
+                <small id="adminEmail">
+                    Loading...
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="nav-btn active"
+        onclick="showPage('dashboardPage', this)"
+    >
+        📊 Dashboard
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('customersPage', this)"
+    >
+        👥 Customers
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('transactionsPage', this)"
+    >
+        💳 Transactions
+    </button>
+
+
+    <button
+        class="nav-btn logout"
+        onclick="logoutAdmin()"
+    >
+        🚪 Logout
+    </button>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================== -->
+
+<main class="main">
+
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>
+                Administration
+            </h1>
+
+            <p>
+                Monitor and manage your banking system.
+            </p>
+
+        </div>
+
+
+        <div class="admin-badge">
+            ADMINISTRATOR
+        </div>
+
+    </div>
+
+
+    <!-- Session warning -->
+    <div
+        id="sessionWarning"
+        class="session-warning"
+    >
+        No administrator is currently signed in.
+        Sign in through Firebase Authentication before
+        using this dashboard.
+    </div>
+
+
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
+
+    <div id="dashboardPage">
+
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <p>
+                    Total Users
+                </p>
+
+                <h2 id="totalCustomers">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Active Users
+                </p>
+
+                <h2 id="activeCustomers">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Blocked Users
+                </p>
+
+                <h2 id="blockedCustomers">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Total Balance
+                </p>
+
+                <h2 id="totalVirtualMoney">
+                    ₹0.00
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        System Overview
+                    </h2>
+
+                    <p class="section-description">
+                        Current status of your banking system.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Use the navigation menu to monitor
+                users, accounts and transactions.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CUSTOMERS
+    ====================================================== -->
+
+    <div
+        id="customersPage"
+        class="hidden"
+    >
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        User Management
+                    </h2>
+
+                    <p class="section-description">
+                        Monitor and manage user accounts.
+                    </p>
+
+                </div>
+
+
+                <input
+                    type="text"
+                    id="customerSearch"
+                    class="search"
+                    placeholder="Search user..."
+                    oninput="filterCustomers()"
+                >
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Account Number
+                            </th>
+
+                            <th>
+                                Balance
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="customerTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="loading"
+                            >
+                                Loading users...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TRANSACTIONS
+    ====================================================== -->
+
+    <div
+        id="transactionsPage"
+        class="hidden"
+    >
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Transaction Monitoring
+                    </h2>
+
+                    <p class="section-description">
+                        Monitor user transactions.
+                    </p>
+
+                </div>
+
+
+                <input
+                    type="text"
+                    id="transactionSearch"
+                    class="search"
+                    placeholder="Search transaction..."
+                    oninput="filterTransactions()"
+                >
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Transaction ID
+                            </th>
+
+                            <th>
+                                Sender
+                            </th>
+
+                            <th>
+                                Receiver
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="transactionTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="loading"
+                            >
+                                Loading transactions...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     FIREBASE
+========================================================== -->
+
+<script type="module">
+
+    import {
+        initializeApp
+    } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+    import {
+        getAuth,
+        onAuthStateChanged,
+        signOut
+    } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+    import {
+        getFirestore,
+        doc,
+        getDoc,
+        collection,
+        getDocs,
+        updateDoc,
+        query,
+        where
+    } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    /* =========================================================
+       FIREBASE CONFIG
+       Same project/config as your existing app.js
+    ========================================================= */
+
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyCPqN_xpObQWGUkYGO4KCFmjANkrPxBNmQ",
+
+        authDomain:
+            "digital-banking-system-dd918.firebaseapp.com",
+
+        projectId:
+            "digital-banking-system-dd918",
+
+        storageBucket:
+            "digital-banking-system-dd918.firebasestorage.app",
+
+        messagingSenderId:
+            "955494889382",
+
+        appId:
+            "1:955494889382:web:2aaf76e2a78ac0918cc167"
+    };
+
+
+    /* =========================================================
+       INITIALIZE FIREBASE
+    ========================================================= */
+
+    const app =
+        initializeApp(
+            firebaseConfig
+        );
+
+
+    const auth =
+        getAuth(app);
+
+
+    const db =
+        getFirestore(app);
+
+
+    let customers = [];
+
+    let transactions = [];
+
+
+
+    /* =========================================================
+       AUTHENTICATION
+       IMPORTANT:
+       THERE IS NO REDIRECT BACK TO THIS PAGE.
+       THIS PREVENTS THE LOOP.
+    ========================================================= */
+
+    onAuthStateChanged(
+        auth,
+        async user => {
+
+            const warning =
+                document.getElementById(
+                    "sessionWarning"
+                );
+
+
+            if (!user) {
+
+                if (warning) {
+
+                    warning.style.display =
+                        "block";
+                }
+
+
+                document.getElementById(
+                    "adminName"
+                ).textContent =
+                    "Not signed in";
+
+
+                document.getElementById(
+                    "adminEmail"
+                ).textContent =
+                    "";
+
+
+                return;
+            }
+
+
+            if (warning) {
+
+                warning.style.display =
+                    "none";
+            }
+
+
+            try {
+
+                /* =============================================
+                   CHECK ADMIN DOCUMENT
+                ============================================= */
+
+                const adminRef =
+                    doc(
+                        db,
+                        "admins",
+                        user.uid
+                    );
+
+
+                const adminSnapshot =
+                    await getDoc(
+                        adminRef
+                    );
+
+
+                if (
+                    !adminSnapshot.exists()
+                ) {
+
+                    await signOut(auth);
+
+                    if (warning) {
+
+                        warning.textContent =
+                            "This Firebase account is not registered as an administrator.";
+
+                        warning.style.display =
+                            "block";
+                    }
+
+
+                    return;
+                }
+
+
+                const adminData =
+                    adminSnapshot.data();
+
+
+                if (
+                    adminData.role !==
+                    "admin"
+                ) {
+
+                    await signOut(auth);
+
+                    if (warning) {
+
+                        warning.textContent =
+                            "This account does not have administrator privileges.";
+
+                        warning.style.display =
+                            "block";
+                    }
+
+
+                    return;
+                }
+
+
+                if (
+                    adminData.status ===
+                    "blocked"
+                ) {
+
+                    await signOut(auth);
+
+                    if (warning) {
+
+                        warning.textContent =
+                            "This administrator account is blocked.";
+
+                        warning.style.display =
+                            "block";
+                    }
+
+
+                    return;
+                }
+
+
+                /* =============================================
+                   ADMIN INFORMATION
+                ============================================= */
+
+                document.getElementById(
+                    "adminName"
+                ).textContent =
+                    adminData.name ||
+                    user.displayName ||
+                    "Administrator";
+
+
+                document.getElementById(
+                    "adminEmail"
+                ).textContent =
+                    adminData.email ||
+                    user.email ||
+                    "";
+
+
+                /* =============================================
+                   LOAD DATA
+                ============================================= */
+
+                await loadCustomers();
+
+                await loadTransactions();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Admin dashboard error:",
+                    error
+                );
+
+
+                if (warning) {
+
+                    warning.textContent =
+                        "Unable to load administration data.";
+
+                    warning.style.display =
+                        "block";
+                }
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================================
+       LOAD CUSTOMERS
+    ========================================================= */
+
+    async function loadCustomers() {
+
+        try {
+
+            const snapshot =
+                await getDocs(
+                    query(
+                        collection(
+                            db,
+                            "accounts"
+                        ),
+                        where(
+                            "role",
+                            "==",
+                            "customer"
+                        )
+                    )
+                );
+
+
+            customers = [];
+
+
+            snapshot.forEach(
+                documentSnapshot => {
+
+                    customers.push({
+
+                        id:
+                            documentSnapshot.id,
+
+                        ...documentSnapshot.data()
+
+                    });
+
+                }
+            );
+
+
+            updateStatistics();
+
+            renderCustomers(
+                customers
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Customer loading error:",
+                error
+            );
+
+            const body =
+                document.getElementById(
+                    "customerTableBody"
+                );
+
+
+            if (body) {
+
+                body.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            style="text-align:center;color:#b91c1c"
+                        >
+                            Unable to load customers.
+                        </td>
+
+                    </tr>
+
+                `;
+            }
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       LOAD TRANSACTIONS
+    ========================================================= */
+
+    async function loadTransactions() {
+
+        try {
+
+            const snapshot =
+                await getDocs(
+                    collection(
+                        db,
+                        "transactions"
+                    )
+                );
+
+
+            transactions = [];
+
+
+            snapshot.forEach(
+                documentSnapshot => {
+
+                    transactions.push({
+
+                        id:
+                            documentSnapshot.id,
+
+                        ...documentSnapshot.data()
+
+                    });
+
+                }
+            );
+
+
+            renderTransactions(
+                transactions
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Transaction loading error:",
+                error
+            );
+
+
+            const body =
+                document.getElementById(
+                    "transactionTableBody"
+                );
+
+
+            if (body) {
+
+                body.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            style="text-align:center;color:#b91c1c"
+                        >
+                            Unable to load transactions.
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       STATISTICS
+    ========================================================= */
+
+    function updateStatistics() {
+
+        const total =
+            customers.length;
+
+
+        const active =
+            customers.filter(
+                customer =>
+                    customer.status ===
+                    "active"
+            ).length;
+
+
+        const blocked =
+            customers.filter(
+                customer =>
+                    customer.status ===
+                    "blocked"
+            ).length;
+
+
+        const totalBalance =
+            customers.reduce(
+                (
+                    sum,
+                    customer
+                ) => {
+
+                    return (
+                        sum +
+                        Number(
+                            customer.balance ||
+                            0
+                        )
+                    );
+
+                },
+                0
+            );
+
+
+        document.getElementById(
+            "totalCustomers"
+        ).textContent =
+            total;
+
+
+        document.getElementById(
+            "activeCustomers"
+        ).textContent =
+            active;
+
+
+        document.getElementById(
+            "blockedCustomers"
+        ).textContent =
+            blocked;
+
+
+        document.getElementById(
+            "totalVirtualMoney"
+        ).textContent =
+            formatMoney(
+                totalBalance
+            );
+
+    }
+
+
+
+    /* =========================================================
+       RENDER CUSTOMERS
+    ========================================================= */
+
+    function renderCustomers(
+        list
+    ) {
+
+        const body =
+            document.getElementById(
+                "customerTableBody"
+            );
+
+
+        if (!body) {
+            return;
+        }
+
+
+        if (!list.length) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty-state"
+                    >
+                        No users found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML =
+            list
+                .map(
+                    customer => {
+
+                        const status =
+                            customer.status ||
+                            "active";
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    ${escapeHTML(
+                                        customer.fullName ||
+                                        customer.name ||
+                                        "Unknown"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        customer.email ||
+                                        "—"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        customer.accountNumber ||
+                                        "—"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${formatMoney(
+                                        customer.balance ||
+                                        0
+                                    )}
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="status ${
+                                            status ===
+                                            "blocked"
+                                                ? "blocked"
+                                                : "active"
+                                        }"
+                                    >
+                                        ${escapeHTML(
+                                            status
+                                        )}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <button
+                                        class="btn ${
+                                            status ===
+                                            "blocked"
+                                                ? "btn-unblock"
+                                                : "btn-block"
+                                        }"
+                                        onclick="toggleCustomerStatus(
+                                            '${customer.id}',
+                                            '${status}'
+                                        )"
+                                    >
+
+                                        ${
+                                            status ===
+                                            "blocked"
+                                                ? "Unblock"
+                                                : "Block"
+                                        }
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+
+    /* =========================================================
+       RENDER TRANSACTIONS
+    ========================================================= */
+
+    function renderTransactions(
+        list
+    ) {
+
+        const body =
+            document.getElementById(
+                "transactionTableBody"
+            );
+
+
+        if (!body) {
+            return;
+        }
+
+
+        if (!list.length) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="empty-state"
+                    >
+                        No transactions found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML =
+            list
+                .map(
+                    transaction => {
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    ${escapeHTML(
+                                        transaction.id
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        transaction.senderEmail ||
+                                        transaction.sender ||
+                                        "—"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        transaction.receiverEmail ||
+                                        transaction.receiver ||
+                                        "—"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${formatMoney(
+                                        transaction.amount ||
+                                        0
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        transaction.type ||
+                                        "Transfer"
+                                    )}
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="status pending"
+                                    >
+                                        ${escapeHTML(
+                                            transaction.status ||
+                                            "completed"
+                                        )}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    ${formatDate(
+                                        transaction.createdAt
+                                    )}
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+
+    /* =========================================================
+       BLOCK / UNBLOCK CUSTOMER
+    ========================================================= */
+
+    window.toggleCustomerStatus =
+        async function (
+            uid,
+            currentStatus
+        ) {
+
+            const newStatus =
+                currentStatus ===
+                "blocked"
+                    ? "active"
+                    : "blocked";
+
+
+            const action =
+                newStatus ===
+                "blocked"
+                    ? "block"
+                    : "unblock";
+
+
+            const confirmed =
+                confirm(
+                    `Are you sure you want to ${action} this account?`
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "accounts",
+                        uid
+                    ),
+                    {
+                        status:
+                            newStatus
+                    }
+                );
+
+
+                await loadCustomers();
+
+
+                alert(
+                    `Account ${action}ed successfully.`
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Status update error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to update account status."
+                );
+
+            }
+
+        };
+
+
+
+    /* =========================================================
+       SEARCH CUSTOMERS
+    ========================================================= */
+
+    window.filterCustomers =
+        function () {
+
+            const input =
+                document.getElementById(
+                    "customerSearch"
+                );
+
+
+            const value =
+                input
+                    ? input.value
+                        .toLowerCase()
+                        .trim()
+                    : "";
+
+
+            const filtered =
+                customers.filter(
+                    customer => {
+
+                        const text =
+                            `${customer.fullName || ""}
+                             ${customer.name || ""}
+                             ${customer.email || ""}
+                             ${customer.accountNumber || ""}`
+                                .toLowerCase();
+
+
+                        return text.includes(
+                            value
+                        );
+
+                    }
+                );
+
+
+            renderCustomers(
+                filtered
+            );
+
+        };
+
+
+
+    /* =========================================================
+       SEARCH TRANSACTIONS
+    ========================================================= */
+
+    window.filterTransactions =
+        function () {
+
+            const input =
+                document.getElementById(
+                    "transactionSearch"
+                );
+
+
+            const value =
+                input
+                    ? input.value
+                        .toLowerCase()
+                        .trim()
+                    : "";
+
+
+            const filtered =
+                transactions.filter(
+                    transaction => {
+
+                        const text =
+                            `${transaction.id || ""}
+                             ${transaction.senderEmail || ""}
+                             ${transaction.receiverEmail || ""}
+                             ${transaction.type || ""}
+                             ${transaction.status || ""}`
+                                .toLowerCase();
+
+
+                        return text.includes(
+                            value
+                        );
+
+                    }
+                );
+
+
+            renderTransactions(
+                filtered
+            );
+
+        };
+
+
+
+    /* =========================================================
+       NAVIGATION
+    ========================================================= */
+
+    window.showPage =
+        function (
+            pageId,
+            button
+        ) {
+
+            document
+                .querySelectorAll(
+                    ".main > div"
+                )
+                .forEach(
+                    page => {
+
+                        page.classList.add(
+                            "hidden"
+                        );
+
+                    }
+                );
+
+
+            const selectedPage =
+                document.getElementById(
+                    pageId
+                );
+
+
+            if (selectedPage) {
+
+                selectedPage.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            document
+                .querySelectorAll(
+                    ".nav-btn"
+                )
+                .forEach(
+                    nav => {
+
+                        nav.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+            if (button) {
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+        };
+
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================= */
+
+    window.logoutAdmin =
+        async function () {
+
+            try {
+
+                await signOut(
+                    auth
+                );
+
+
+                /*
+                 * IMPORTANT:
+                 * We do NOT redirect to this page again.
+                 * Reloading this page after logout would simply
+                 * show the session warning instead of looping.
+                 */
+
+                document.getElementById(
+                    "sessionWarning"
+                ).textContent =
+                    "You have been signed out of the administrator account.";
+
+
+                document.getElementById(
+                    "sessionWarning"
+                ).style.display =
+                    "block";
+
+
+                document.getElementById(
+                    "adminName"
+                ).textContent =
+                    "Not signed in";
+
+
+                document.getElementById(
+                    "adminEmail"
+                ).textContent =
+                    "";
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+                alert(
+                    "Unable to logout."
+                );
+
+            }
+
+        };
+
+
+
+    /* =========================================================
+       FORMAT MONEY
+    ========================================================= */
+
+    function formatMoney(
+        amount
+    ) {
+
+        return new Intl.NumberFormat(
+            "en-IN",
+            {
+                style:
+                    "currency",
+
+                currency:
+                    "INR",
+
+                maximumFractionDigits:
+                    2
+            }
+        ).format(
+            Number(
+                amount
+            ) || 0
+        );
+
+    }
+
+
+
+    /* =========================================================
+       FORMAT DATE
+    ========================================================= */
+
+    function formatDate(
+        value
+    ) {
+
+        if (!value) {
+            return "—";
+        }
+
+
+        try {
+
+            if (
+                value &&
+                typeof value.toDate ===
+                    "function"
+            ) {
+
+                return value
+                    .toDate()
+                    .toLocaleString(
+                        "en-IN"
+                    );
+
+            }
+
+
+            return new Date(
+                value
+            ).toLocaleString(
+                "en-IN"
+            );
+
+        } catch {
+
+            return "—";
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
+
+    function escapeHTML(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

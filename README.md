@@ -1,91 +1,179 @@
-# 🏦 NovaBank — Digital Banking System
+# 🏦 Digital Banking System
 
-## 🔗 Live Demo
-
-👉 (https://pritam-42.github.io/Digital-Bank/)
-
----
+🌐 **Live Website:** https://pritam-42.github.io/Digital-Bank/
 
 ## 📌 About the Project
 
-NovaBank is a digital banking project that I built to understand how a real-world banking system can work on the web.
+The **Digital Banking System** is a web-based banking application designed to provide users with a simple and convenient way to manage their banking activities online.
 
-The main goal of this project is to create a simple and modern banking experience where users can manage their accounts and perform basic banking operations, while administrators can monitor and manage the overall system.
+Instead of visiting a bank for basic operations, users can create an account, log in securely, check their balance, send and receive money, deposit or withdraw virtual money, and view their transaction history through the website.
 
-I built the project using HTML, CSS, JavaScript and Firebase.
+The project also includes a separate **Administration Panel** that allows administrators to monitor customers, manage accounts, and keep track of banking transactions.
 
----
+I developed this project to understand how a real-world digital banking system can be designed using frontend technologies together with Firebase services.
 
-## ✨ What Can You Do?
+## 🎯 Main Objective
 
-### 👤 User Side
+The main objective of this project is to create a **simple, interactive, and user-friendly digital banking platform**.
 
-Users can:
+The system allows users to:
 
-- Create a new bank account
-- Sign in to their account
-- Check their account balance
-- View their account details
-- Send money to another account
+- Create a banking account online.
+- Log in securely.
+- Check their account balance.
+- Send money to other users.
+- Deposit virtual money.
+- Withdraw virtual money.
+- View transaction history.
+- Manage their account information.
+
+The administration panel provides additional tools for monitoring and managing the banking system.
+
+## ✨ Features
+
+### 👤 User
+
+- Create a new account
+- User registration
+- Secure login
+- User dashboard
+- View account balance
+- Send money
 - Deposit money
 - Withdraw money
-- Check transaction history
-- Report transaction-related problems
-- Manage their account
+- View transaction history
+- View account information
+- Report banking issues
+- Logout
 
-### 🛡️ Admin Side
+### 👨‍💼 Administrator
 
-The admin dashboard is designed to give the administrator an overview of the banking system.
-
-The administrator can:
-
-- View registered users
-- Monitor user accounts
-- Check account balances
+- Secure administrator login
+- Administrator dashboard
+- Monitor registered users
+- View customer accounts
 - Monitor transactions
-- Block or unblock accounts
-- View active and blocked users
-- See overall banking statistics
-- Monitor the system through dashboard visualizations
+- View account balances
+- Manage user accounts
+- Check active and blocked accounts
+- View banking statistics
+- Monitor total virtual money
+- Manage customer status
+- Logout
 
----
+## 💳 Banking Operations
 
-## 📊 Admin Dashboard
+The system provides several basic banking operations through the user dashboard.
 
-The admin dashboard includes different statistics and visualizations to make it easier to understand what is happening in the banking system.
+### 💰 Deposit
 
-For example:
+Users can add virtual money to their account balance.
+
+### 💸 Withdraw
+
+Users can withdraw virtual money from their available balance.
+
+### ↔️ Send Money
+
+Users can transfer money to another registered user using their account details.
+
+### 📊 Transaction History
+
+Users can view their previous banking activities and transactions from the transaction section.
+
+## 📊 Administration Dashboard
+
+The administration panel provides an overview of the banking system.
+
+Administrators can monitor:
 
 - Total users
 - Active users
 - Blocked users
 - Total virtual money
-- Transaction activity
-- Account information
+- Customer accounts
+- Banking transactions
+- Account status
 
-The dashboard is designed to make important information easy to find instead of having to check everything manually.
+The dashboard also uses visual statistics and interactive elements to make it easier to understand the current state of the banking system.
 
----
+## 🔐 Authentication
 
-## 🔥 Firebase
+**Firebase Authentication** is used to manage user accounts and login.
 
-I used Firebase to handle the backend-related parts of the project.
+The system provides separate access for:
 
-### Firebase Authentication
+**User**
 
-Used for:
+- Create account
+- Login
+- Access personal banking dashboard
+- Perform banking operations
 
-- User registration
-- User login
-- Admin login
-- Authentication sessions
+**Administrator**
 
-### Cloud Firestore
+- Administrator login
+- Access administration dashboard
+- Monitor users
+- Manage accounts
+- Monitor transactions
 
-Firestore is used to store information related to:
+Only users with administrator privileges can access the administration panel.
+
+## 🗄️ Database
+
+**Cloud Firestore** is used to store and manage application data.
+
+The database contains information related to:
+
+- User accounts
+- Customer information
+- Account numbers
+- Account balances
+- User roles
+- Account status
+- Transactions
+- Transaction amounts
+- Transaction dates
+
+The system uses different roles such as:
+
+- `user`
+- `admin`
+
+to control access to different parts of the application.
+
+## 🛠️ Technologies Used
+
+### Frontend
+
+- HTML5
+- CSS3
+- JavaScript
+
+### Backend and Cloud Services
+
+- Firebase Authentication
+- Cloud Firestore
+- GitHub Pages
+
+### Development Tools
+
+- Visual Studio Code
+- Git
+- GitHub
+- Firebase Console
+
+## 📁 Project Structure
 
 ```text
-accounts
-admins
-transactions
-transactionIssues
+DIGITAL_BANK/
+│
+├── index.html
+├── admin-login.html
+├── admin.html
+├── style.css
+├── app.js
+├── pritam.jpeg
+│
+└── README.md
